@@ -71,7 +71,8 @@
               "browserTarget": "web-ui:build:production"
             },
             "development": {
-              "browserTarget": "web-ui:build:development"
+              "browserTarget": "web-ui:build:development",
+              "proxyConfig": "proxy.config.json"
             }
           },
           "defaultConfiguration": "development"
