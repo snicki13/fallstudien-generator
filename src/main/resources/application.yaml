@@ -3,9 +3,8 @@ spring:
   web:
     resources.static-locations: classpath:/static/
   webflux:
-    static-path-pattern: /ui/*
+    static-path-pattern: /ui/**
   r2dbc:
     url: r2dbc:pool:postgres://${DB_HOST:postgres}:5432/dev
     username: dev
     password: password
-    initialization-mode: always
