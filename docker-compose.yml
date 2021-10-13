@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  issue-db:
+  postgres:
     image: postgres
     environment:
       - POSTGRES_USER=dev
@@ -18,6 +18,8 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
     networks:
       - postgres-network
       - network
