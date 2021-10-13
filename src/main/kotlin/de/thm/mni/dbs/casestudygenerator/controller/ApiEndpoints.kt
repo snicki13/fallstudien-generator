@@ -15,6 +15,7 @@ import de.thm.mni.dbs.casestudygenerator.component1
 import de.thm.mni.dbs.casestudygenerator.component2
 import org.springframework.web.reactive.function.server.body
 import reactor.kotlin.core.publisher.toMono
+import kotlin.random.Random
 
 @Configuration
 class ApiEndpoints(
@@ -44,22 +45,31 @@ class ApiEndpoints(
         return req.bodyToFlux(CaseStudy::class.java)
             .collectList()
             .zipWith(caseStudyRepository.findAll().collectList())
-            .flatMap { (exclude, caseStudies) ->
-                if (exclude.size >= maxExclusions) {
-                    Mono.error(Exception("You may only exclude $maxExclusions case studies!"))
-                } else {
-                    caseStudies.filter { !exclude.contains(it) }.toMono<List<CaseStudy>>()
-                }
-            }.zipWith(req.principal())
-            .flatMap { (caseStudies, token) ->
+            .flatMap { (exclusions, caseStudies) -> applyExclusions(exclusions, caseStudies)}
+            .zipWith(req.principal())
+            .map { (caseStudies, token) ->
                 token as AccessToken
-                val selectedStudies = caseStudies.shuffled().take(token.countCaseStudies)
-                if (selectedStudies.size < token.countCaseStudies) {
-                    Mono.error(Exception("Not enough case studies!"))
-                } else {
-                    ServerResponse.ok().bodyValue(selectedStudies)
-                }
+                selectCaseStudies(caseStudies, token.numCaseStudies)
+            }.flatMap { selectedStudies ->
+                ServerResponse.ok().bodyValue(selectedStudies)
             }
+    }
+
+    private fun selectCaseStudies(caseStudies: List<CaseStudy>, numCaseStudies: Int): List<CaseStudy> {
+        val selectedStudies = caseStudies.shuffled(Random(Random.nextLong())).take(numCaseStudies)
+        return if (selectedStudies.size < numCaseStudies) {
+            throw Exception("Not enough case studies!")
+        } else {
+            selectedStudies
+        }
+    }
+
+    private fun applyExclusions(exclusions: List<CaseStudy>, caseStudies: List<CaseStudy>): Mono<List<CaseStudy>> {
+        return if (exclusions.size > maxExclusions) {
+            Mono.error(Exception("You may only exclude $maxExclusions case studies!"))
+        } else {
+            caseStudies.filter { !exclusions.contains(it) }.toMono()
+        }
     }
     /**
      * Exception logger.

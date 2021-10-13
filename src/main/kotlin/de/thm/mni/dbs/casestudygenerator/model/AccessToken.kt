@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 data class AccessToken(
     @field:Id val token: String,
     @field:Column val groupName: String,
-    @field:Column val countCaseStudies: Int,
+    @field:Column val numCaseStudies: Int,
     @field:Column val validUntil: LocalDateTime,
 ): Principal, Authentication {
 
@@ -24,7 +24,7 @@ data class AccessToken(
 
     override fun getCredentials(): Any = token
 
-    override fun getDetails(): Any = countCaseStudies
+    override fun getDetails(): Any = numCaseStudies
 
     override fun getPrincipal(): Any = groupName
 

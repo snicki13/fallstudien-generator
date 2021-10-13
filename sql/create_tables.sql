@@ -1,7 +1,7 @@
 create table access_token (
     token varchar(255) primary key,
     group_name varchar(255),
-    count_case_studies int,
+    num_case_studies int,
     valid_until timestamp
 );
 
