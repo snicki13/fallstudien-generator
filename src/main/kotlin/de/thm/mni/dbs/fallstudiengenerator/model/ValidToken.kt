@@ -7,6 +7,6 @@ import java.time.LocalDateTime
 @Table
 data class ValidToken(
     @field:Id val token: String,
-    val group: String,
+    val groupName: String,
     val until: LocalDateTime
 )
