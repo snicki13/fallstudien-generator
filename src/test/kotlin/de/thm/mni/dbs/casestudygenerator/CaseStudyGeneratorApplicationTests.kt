@@ -1,10 +1,10 @@
-package de.thm.mni.dbs.fallstudiengenerator
+package de.thm.mni.dbs.casestudygenerator
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class FallstudienGeneratorApplicationTests {
+class CaseStudyGeneratorApplicationTests {
 
     @Test
     fun contextLoads() {

@@ -1,5 +1,5 @@
 spring:
-  autoconfigure.exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration, org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration, org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
+  autoconfigure.exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration, org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration, org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration, org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration
   web:
     resources.static-locations: classpath:/static/
   webflux:
@@ -8,3 +8,6 @@ spring:
     url: r2dbc:pool:postgres://${DB_HOST:postgres}:5432/dev
     username: dev
     password: password
+
+generator:
+  max-exlusions: 3
