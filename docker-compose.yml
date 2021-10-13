@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  issue-db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - /var/lib/postgresql/data
+      # copy the sql script to create tables
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - postgres-network
+  fallstudien-generator:
+    image: fallstudien-generator
+    container_name: fallstudien-generator
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    networks:
+      - postgres-network
+      - network
+networks:
+  postgres-network:
+    driver: bridge
+  network:
+    driver: bridge
