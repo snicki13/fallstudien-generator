@@ -1,6 +1,6 @@
-export class AccessToken {
-  token: string = ""
-  groupName: string = ""
-  numCaseStudies: number = 0
-  validUntil: Date = new Date()
+export interface AccessToken {
+  token: string
+  groupName: string
+  numCaseStudies: number
+  validUntil: Date
 }

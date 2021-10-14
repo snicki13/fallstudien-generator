@@ -4,6 +4,7 @@ import {map, tap} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {AccessToken} from "../model/AccessToken";
+import {CaseStudy} from "../model/CaseStudy";
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class AuthService {
   }
 
   private getGroupInfo(): Observable<AccessToken> {
-    return this.http.get<AccessToken>("/api/group-info", {headers: {"access-token": this.accessToken} })
+    return this.http.get<AccessToken>("/api/group-info", {headers: {"access-token": this.accessToken!!} })
   }
 
   public getAccessToken(): string {
