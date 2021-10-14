@@ -24,4 +24,8 @@ export class AuthService {
   private getGroupInfo(): Observable<AccessToken> {
     return this.http.get<AccessToken>("/api/group-info", {headers: {"access-token": this.accessToken} })
   }
+
+  public getAccessToken(): string {
+    return this.accessToken!!
+  }
 }
