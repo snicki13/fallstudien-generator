@@ -15,6 +15,6 @@ export class CaseStudyGeneratorService {
   ) { }
 
   public getCaseStudies(): Observable<CaseStudy[]> {
-    this.http.get<CaseStudy[]>("/api/case-studies", {headers: {"access-token": this.auth.getAccessToken()} })
+    return this.http.get<CaseStudy[]>("/api/case-studies", {headers: {"access-token": this.auth.getAccessToken()}});
   }
 }
