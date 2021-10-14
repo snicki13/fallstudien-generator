@@ -8,6 +8,3 @@ spring:
     url: r2dbc:pool:postgres://${DB_HOST:postgres}:5432/dev
     username: dev
     password: password
-
-generator:
-  max-exlusions: 3

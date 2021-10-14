@@ -1,6 +1,6 @@
 package de.thm.mni.dbs.casestudygenerator.security
 
-import de.thm.mni.dbs.casestudygenerator.repositories.TokenRepository
+import de.thm.mni.dbs.casestudygenerator.repositories.AccessTokenRepository
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.core.Authentication
@@ -12,7 +12,7 @@ import reactor.kotlin.core.publisher.toMono
 
 @Component
 class AccessTokenSecurity(
-    private val tokenRepository: TokenRepository,
+    private val accessTokenRepository: AccessTokenRepository,
     ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -29,7 +29,7 @@ class AccessTokenSecurity(
     }
 
     private fun reactiveAuthenticationManager() = ReactiveAuthenticationManager { auth ->
-        tokenRepository.findById(auth.credentials as String)
+        accessTokenRepository.findById(auth.credentials as String)
             .doOnNext {
                 logger.info(it.groupName)
             }

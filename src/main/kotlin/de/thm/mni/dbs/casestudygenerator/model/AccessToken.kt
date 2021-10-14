@@ -13,7 +13,8 @@ data class AccessToken(
     @field:Id val token: String,
     @field:Column val groupName: String,
     @field:Column val numCaseStudies: Int,
-    @field:Column val validUntil: LocalDateTime,
+    @field:Column val numExclusions: Int,
+    @field:Column val validUntil: LocalDateTime
 ): Principal, Authentication {
 
     private var valid = true
