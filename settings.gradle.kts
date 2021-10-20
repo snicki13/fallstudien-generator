@@ -1,2 +1,2 @@
-rootProject.name = "fallstudien-generator"
+rootProject.name = "case-study-generator"
 include("web-ui")

@@ -9,9 +9,10 @@ import java.security.Principal
 import java.time.LocalDateTime
 
 @Table
-data class AccessToken(
-    @field:Id val token: String,
+data class StudentGroup(
+    @field:Id val groupId: Int,
     @field:Column val groupName: String,
+    @field:Column val token: String,
     @field:Column val numCaseStudies: Int,
     @field:Column val numExclusions: Int,
     @field:Column val validUntil: LocalDateTime
@@ -25,9 +26,9 @@ data class AccessToken(
 
     override fun getCredentials(): Any = token
 
-    override fun getDetails(): Any = numCaseStudies
+    override fun getDetails(): Any = groupName
 
-    override fun getPrincipal(): Any = groupName
+    override fun getPrincipal(): Any = groupId
 
     override fun isAuthenticated(): Boolean = LocalDateTime.now().isBefore(validUntil) && valid
 

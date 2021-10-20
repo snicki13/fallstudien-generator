@@ -1,7 +1,6 @@
 package de.thm.mni.dbs.casestudygenerator.controller
 
 import de.thm.mni.dbs.casestudygenerator.model.CaseStudy
-import de.thm.mni.dbs.casestudygenerator.model.AccessToken
 import de.thm.mni.dbs.casestudygenerator.repositories.CaseStudyRepository
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
@@ -13,7 +12,8 @@ import reactor.core.publisher.Mono
 import de.thm.mni.dbs.casestudygenerator.component1
 import de.thm.mni.dbs.casestudygenerator.component2
 import de.thm.mni.dbs.casestudygenerator.component3
-import de.thm.mni.dbs.casestudygenerator.repositories.AccessTokenRepository
+import de.thm.mni.dbs.casestudygenerator.model.StudentGroup
+import de.thm.mni.dbs.casestudygenerator.repositories.GroupRepository
 import org.springframework.web.reactive.function.server.body
 import reactor.kotlin.core.publisher.toMono
 import kotlin.random.Random
@@ -21,7 +21,7 @@ import kotlin.random.Random
 @Configuration
 class ApiEndpoints(
     private val caseStudyRepository: CaseStudyRepository,
-    private val accessTokenRepository: AccessTokenRepository,
+    private val groupRepository: GroupRepository,
 ) {
 
     private val logger = LoggerFactory.getLogger(ApiEndpoints::class.java)
@@ -38,7 +38,7 @@ class ApiEndpoints(
     }
 
     fun getGroupInfo(req: ServerRequest): Mono<ServerResponse> =
-        ServerResponse.ok().body<AccessToken>(accessTokenRepository.findById(req.headers().firstHeader("access-token")!!))
+        ServerResponse.ok().body<StudentGroup>(groupRepository.findById(req.headers().firstHeader("access-token")!!))
 
     fun getCaseStudies(req: ServerRequest): Mono<ServerResponse> =
         ServerResponse.ok().body<CaseStudy>(caseStudyRepository.findAll())
@@ -51,7 +51,7 @@ class ApiEndpoints(
             .flatMap { exclusions ->
                 Mono.zip(exclusions.toMono(), caseStudyRepository.findAll().collectList(), req.principal())
             }.map { (exclusions, caseStudies, principal) ->
-                principal as AccessToken
+                principal as StudentGroup
                 val caseStudiesWithoutExclusions = applyExclusions(exclusions, caseStudies, principal)
                 selectCaseStudies(caseStudiesWithoutExclusions, principal.numCaseStudies)
             }.flatMap { selectedStudies ->
@@ -68,9 +68,9 @@ class ApiEndpoints(
         }
     }
 
-    private fun applyExclusions(exclusions: List<CaseStudy>, caseStudies: List<CaseStudy>, accessToken: AccessToken): List<CaseStudy> {
-        return if (exclusions.size > accessToken.numExclusions) {
-            throw Exception("You may only exclude ${accessToken.numExclusions} case studies!")
+    private fun applyExclusions(exclusions: List<CaseStudy>, caseStudies: List<CaseStudy>, studentGroup: StudentGroup): List<CaseStudy> {
+        return if (exclusions.size > studentGroup.numExclusions) {
+            throw Exception("You may only exclude ${studentGroup.numExclusions} case studies!")
         } else {
             caseStudies.filterNot(exclusions::contains)
         }

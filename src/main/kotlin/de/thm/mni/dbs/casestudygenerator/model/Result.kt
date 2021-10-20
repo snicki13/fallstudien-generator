@@ -5,9 +5,8 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 
 @Table
-data class CaseStudy(
-    @field:Id val number: Int,
-) {
-    @Column
-    var title: String = ""
-}
+data class Result (
+    @field:Id val resultId: Int,
+    @field:Column val caseStudy: Int,
+    @field:Column val groupId: Int
+)
