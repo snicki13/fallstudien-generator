@@ -69,7 +69,7 @@ class ApiEndpoints(
     }
 
     private fun applyExclusions(exclusions: List<CaseStudy>, caseStudies: List<CaseStudy>, studentGroup: StudentGroup): List<CaseStudy> {
-        return if (exclusions.size > studentGroup.numExclusions) {
+        return if (exclusions.size > studentGroup.numExclusions!!) {
             throw Exception("You may only exclude ${studentGroup.numExclusions} case studies!")
         } else {
             caseStudies.filterNot(exclusions::contains)

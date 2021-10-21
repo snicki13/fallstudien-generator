@@ -1,6 +1,7 @@
 package de.thm.mni.dbs.casestudygenerator.security
 
 import de.thm.mni.dbs.casestudygenerator.repositories.GroupRepository
+import de.thm.mni.dbs.casestudygenerator.repositories.ResultRepository
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.core.Authentication
@@ -13,6 +14,7 @@ import reactor.kotlin.core.publisher.toMono
 @Component
 class AccessTokenSecurity(
     private val groupRepository: GroupRepository,
+    private val resultRepository: ResultRepository
     ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)

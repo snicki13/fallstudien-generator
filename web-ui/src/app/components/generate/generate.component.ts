@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import {AccessToken} from "../../model/AccessToken";
-import {AuthService} from "../../services/auth.service";
-import {CaseStudyGeneratorService} from "../../services/case-study-generator.service";
-import {ActivatedRoute} from "@angular/router";
-import {tap} from "rxjs/operators";
-import {CaseStudy} from "../../model/CaseStudy";
+import { Component, OnInit } from '@angular/core'
+import { StudentGroup } from '../../model/StudentGroup'
+import { AuthService } from '../../services/auth.service'
+import { CaseStudyGeneratorService } from '../../services/case-study-generator.service'
+import { ActivatedRoute } from '@angular/router'
+import { tap } from 'rxjs/operators'
+import { CaseStudy } from '../../model/CaseStudy'
 
 @Component({
   selector: 'app-wrapper',
@@ -12,23 +12,22 @@ import {CaseStudy} from "../../model/CaseStudy";
   styleUrls: ['./generate.component.css']
 })
 export class GenerateComponent implements OnInit {
-
-  public groupInfo?: AccessToken = undefined
+  public groupInfo?: StudentGroup = undefined
   public caseStudies: CaseStudy[] = []
 
-  constructor(
+  // eslint-disable-next-line no-useless-constructor
+  constructor (
     private auth: AuthService,
     private generator: CaseStudyGeneratorService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit (): void {
     this.auth.getGroupInfo(this.route).pipe(
-      tap(accessToken => this.groupInfo = accessToken)
+      tap(accessToken => { this.groupInfo = accessToken })
     ).subscribe()
     this.generator.getCaseStudies().pipe(
-      tap(caseStudies => this.caseStudies = caseStudies)
+      tap(caseStudies => { this.caseStudies = caseStudies })
     ).subscribe()
   }
-
 }

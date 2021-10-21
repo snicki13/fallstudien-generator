@@ -10,13 +10,15 @@ import java.time.LocalDateTime
 
 @Table
 data class StudentGroup(
-    @field:Id val groupId: Int,
+    @field:Id val groupId: Int? = null,
     @field:Column val groupName: String,
     @field:Column val token: String,
     @field:Column val numCaseStudies: Int,
-    @field:Column val numExclusions: Int,
-    @field:Column val validUntil: LocalDateTime
+    @field:Column val numExclusions: Int? = null,
+    @field:Column val validUntil: LocalDateTime? = null
 ): Principal, Authentication {
+
+    val caseStudies: MutableList<Int> = mutableListOf()
 
     private var valid = true
 
@@ -28,7 +30,7 @@ data class StudentGroup(
 
     override fun getDetails(): Any = groupName
 
-    override fun getPrincipal(): Any = groupId
+    override fun getPrincipal(): Any = groupId!!
 
     override fun isAuthenticated(): Boolean = LocalDateTime.now().isBefore(validUntil) && valid
 
