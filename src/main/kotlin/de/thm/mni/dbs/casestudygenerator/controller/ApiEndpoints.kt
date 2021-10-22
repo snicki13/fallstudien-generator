@@ -38,7 +38,7 @@ class ApiEndpoints(
     }
 
     fun getGroupInfo(req: ServerRequest): Mono<ServerResponse> =
-        ServerResponse.ok().body<StudentGroup>(groupRepository.findById(req.headers().firstHeader("access-token")!!))
+        ServerResponse.ok().body<StudentGroup>(groupRepository.findByToken(req.headers().firstHeader("access-token")!!))
 
     fun getCaseStudies(req: ServerRequest): Mono<ServerResponse> =
         ServerResponse.ok().body<CaseStudy>(caseStudyRepository.findAll())

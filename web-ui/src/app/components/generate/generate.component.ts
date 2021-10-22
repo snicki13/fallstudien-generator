@@ -12,7 +12,7 @@ import { CaseStudy } from '../../model/CaseStudy'
   styleUrls: ['./generate.component.css']
 })
 export class GenerateComponent implements OnInit {
-  public groupInfo?: StudentGroup = undefined
+  public groupInfo: StudentGroup = null
   public caseStudies: CaseStudy[] = []
 
   // eslint-disable-next-line no-useless-constructor
@@ -23,8 +23,8 @@ export class GenerateComponent implements OnInit {
   ) {}
 
   ngOnInit (): void {
-    this.auth.getGroupInfo(this.route).pipe(
-      tap(accessToken => { this.groupInfo = accessToken })
+    this.auth.init(this.route).pipe(
+      tap(info => { this.groupInfo = info })
     ).subscribe()
     this.generator.getCaseStudies().pipe(
       tap(caseStudies => { this.caseStudies = caseStudies })

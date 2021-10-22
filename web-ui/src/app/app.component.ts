@@ -1,6 +1,4 @@
 import { Component } from '@angular/core'
-import { AuthService } from './services/auth.service'
-import { ActivatedRoute } from '@angular/router'
 
 @Component({
   selector: 'app-root',
@@ -9,11 +7,4 @@ import { ActivatedRoute } from '@angular/router'
 })
 export class AppComponent {
   title = 'web-ui';
-
-  // eslint-disable-next-line no-useless-constructor
-  constructor (private auth: AuthService, private route: ActivatedRoute) { }
-
-  ngOnInit (): void {
-    this.auth.init(this.route)
-  }
 }

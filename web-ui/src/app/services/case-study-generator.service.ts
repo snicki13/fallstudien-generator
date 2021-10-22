@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Observable } from 'rxjs'
 import { CaseStudy } from '../model/CaseStudy'
 import { AuthService } from './auth.service'
-import { map } from 'rxjs/operators'
+import { filter, map, mergeMap } from 'rxjs/operators'
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +16,10 @@ export class CaseStudyGeneratorService {
   ) { }
 
   public getCaseStudies (): Observable<CaseStudy[]> {
-    const headers = new HttpHeaders().set('access-token', this.auth.getAccessToken())
-    return this.http.get<CaseStudy[]>('/api/case-studies', { headers: headers, observe: 'response' }).pipe(
+    return this.auth.getAccessToken().pipe(
+      filter(token => token !== undefined),
+      map(token => new HttpHeaders().set('access-token', token)),
+      mergeMap((headers: HttpHeaders) => this.http.get<CaseStudy[]>('/api/case-studies', { headers: headers, observe: 'response' })),
       map(response => response.body!!)
     )
   }

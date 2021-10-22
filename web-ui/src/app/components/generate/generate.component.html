@@ -1,2 +1,2 @@
 <app-header></app-header>
-<app-form [caseStudies]="this.caseStudies"></app-form>
+<app-form *ngIf="caseStudies !== undefined" [caseStudies]="this.caseStudies" [groupInfo]="groupInfo"></app-form>

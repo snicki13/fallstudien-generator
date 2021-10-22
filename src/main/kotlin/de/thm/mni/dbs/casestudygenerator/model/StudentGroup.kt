@@ -1,6 +1,7 @@
 package de.thm.mni.dbs.casestudygenerator.model
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Transient
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.security.core.Authentication
@@ -18,8 +19,10 @@ data class StudentGroup(
     @field:Column val validUntil: LocalDateTime? = null
 ): Principal, Authentication {
 
+    @Transient
     val caseStudies: MutableList<Int> = mutableListOf()
 
+    @Transient
     private var valid = true
 
     override fun getName(): String = groupName
