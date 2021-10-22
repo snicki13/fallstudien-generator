@@ -13,7 +13,9 @@ import de.thm.mni.dbs.casestudygenerator.component1
 import de.thm.mni.dbs.casestudygenerator.component2
 import de.thm.mni.dbs.casestudygenerator.component3
 import de.thm.mni.dbs.casestudygenerator.model.StudentGroup
+import de.thm.mni.dbs.casestudygenerator.model.StudyResult
 import de.thm.mni.dbs.casestudygenerator.repositories.GroupRepository
+import de.thm.mni.dbs.casestudygenerator.repositories.ResultRepository
 import org.springframework.web.reactive.function.server.body
 import reactor.kotlin.core.publisher.toMono
 import kotlin.random.Random
@@ -22,6 +24,7 @@ import kotlin.random.Random
 class ApiEndpoints(
     private val caseStudyRepository: CaseStudyRepository,
     private val groupRepository: GroupRepository,
+    private val resultRepository: ResultRepository
 ) {
 
     private val logger = LoggerFactory.getLogger(ApiEndpoints::class.java)
@@ -38,7 +41,18 @@ class ApiEndpoints(
     }
 
     fun getGroupInfo(req: ServerRequest): Mono<ServerResponse> =
-        ServerResponse.ok().body<StudentGroup>(groupRepository.findByToken(req.headers().firstHeader("access-token")!!))
+        ServerResponse.ok().body<StudentGroup>(
+            groupRepository.findByToken(req.headers().firstHeader("access-token")!!).zipWhen { studentGroup ->
+                this.resultRepository.getAllByGroupId(studentGroup.groupId!!).map {
+                    it.caseStudy
+                }.publish(caseStudyRepository::findAllById).collectList()
+            }.map { tuple ->
+                val group = tuple.t1
+                val results = tuple.t2
+                group.caseStudies.addAll(results)
+                group
+            }
+        )
 
     fun getCaseStudies(req: ServerRequest): Mono<ServerResponse> =
         ServerResponse.ok().body<CaseStudy>(caseStudyRepository.findAll())
@@ -52,10 +66,15 @@ class ApiEndpoints(
                 Mono.zip(exclusions.toMono(), caseStudyRepository.findAll().collectList(), req.principal())
             }.map { (exclusions, caseStudies, principal) ->
                 principal as StudentGroup
+                logger.info("Generate case studies for group {}. Excluded: {}!", principal.groupName, exclusions)
                 val caseStudiesWithoutExclusions = applyExclusions(exclusions, caseStudies, principal)
-                selectCaseStudies(caseStudiesWithoutExclusions, principal.numCaseStudies)
+                Pair(selectCaseStudies(caseStudiesWithoutExclusions, principal.numCaseStudies), principal)
+            }.delayUntil { (selectedStudies, group) ->
+                this.resultRepository.saveAll(selectedStudies.map {
+                    StudyResult(it.number, group.groupId!!)
+                })
             }.flatMap { selectedStudies ->
-                ServerResponse.ok().bodyValue(selectedStudies)
+                ServerResponse.ok().bodyValue(selectedStudies.first)
             }
     }
 

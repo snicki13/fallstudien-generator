@@ -24,10 +24,18 @@ export class GenerateComponent implements OnInit {
 
   ngOnInit (): void {
     this.auth.init(this.route).pipe(
-      tap(info => { this.groupInfo = info })
+      tap(info => {
+        this.groupInfo = info
+      })
     ).subscribe()
     this.generator.getCaseStudies().pipe(
       tap(caseStudies => { this.caseStudies = caseStudies })
+    ).subscribe()
+  }
+
+  generateStudies (excludedStudies: CaseStudy[]) {
+    this.generator.generate(excludedStudies).pipe(
+      tap(studies => { this.groupInfo.caseStudies = studies })
     ).subscribe()
   }
 }

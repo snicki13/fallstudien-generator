@@ -1,5 +1,6 @@
 package de.thm.mni.dbs.casestudygenerator.model
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
 import org.springframework.data.relational.core.mapping.Column
@@ -19,8 +20,9 @@ data class StudentGroup(
     @field:Column val validUntil: LocalDateTime? = null
 ): Principal, Authentication {
 
+    @JsonInclude
     @Transient
-    val caseStudies: MutableList<Int> = mutableListOf()
+    val caseStudies: MutableList<CaseStudy> = mutableListOf()
 
     @Transient
     private var valid = true

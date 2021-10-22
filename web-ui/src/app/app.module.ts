@@ -17,14 +17,16 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http'
 import { AppRoutingModule } from './app-routing.module'
 import { RouterModule } from '@angular/router'
-import { GenerateComponent } from './components/generate/generate.component'
+import { GenerateComponent } from './components/generate/generate.component';
+import { ResultComponent } from './components/result/result.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     FormComponent,
     HeaderComponent,
-    GenerateComponent
+    GenerateComponent,
+    ResultComponent
   ],
   imports: [
     BrowserModule,

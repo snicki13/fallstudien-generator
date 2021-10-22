@@ -12,8 +12,8 @@ create table case_study (
     title varchar(255)
 );
 
-create table result (
-    result_id int primary key,
+create table study_result (
+    result_id SERIAL primary key,
     case_study int,
     group_id int,
     foreign key(case_study) references case_study(number),

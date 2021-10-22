@@ -10,4 +10,6 @@ data class CaseStudy(
 ) {
     @Column
     var title: String = ""
+
+    override fun toString(): String = "$number: $title"
 }

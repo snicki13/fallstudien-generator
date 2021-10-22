@@ -32,9 +32,6 @@ class AccessTokenSecurity(
 
     private fun reactiveAuthenticationManager() = ReactiveAuthenticationManager { auth ->
         groupRepository.findByToken(auth.credentials as String)
-            .doOnNext {
-                logger.info(it.groupName)
-            }
             .filter { it.isAuthenticated }
             .cast(Authentication::class.java)
             .defaultIfEmpty(auth)
