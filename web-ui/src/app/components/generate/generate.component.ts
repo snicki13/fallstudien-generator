@@ -12,7 +12,7 @@ import { CaseStudy } from '../../model/CaseStudy'
   styleUrls: ['./generate.component.css']
 })
 export class GenerateComponent implements OnInit {
-  public groupInfo: StudentGroup = null
+  public groupInfo?: StudentGroup = undefined
   public caseStudies: CaseStudy[] = []
 
   // eslint-disable-next-line no-useless-constructor
@@ -35,7 +35,7 @@ export class GenerateComponent implements OnInit {
 
   generateStudies (excludedStudies: CaseStudy[]) {
     this.generator.generate(excludedStudies).pipe(
-      tap(studies => { this.groupInfo.caseStudies = studies })
+      tap(studies => { this.groupInfo!!.caseStudies = studies })
     ).subscribe()
   }
 }

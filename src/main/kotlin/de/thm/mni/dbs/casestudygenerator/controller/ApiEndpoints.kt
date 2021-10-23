@@ -11,7 +11,6 @@ import org.springframework.web.reactive.function.server.router
 import reactor.core.publisher.Mono
 import de.thm.mni.dbs.casestudygenerator.component1
 import de.thm.mni.dbs.casestudygenerator.component2
-import de.thm.mni.dbs.casestudygenerator.component3
 import de.thm.mni.dbs.casestudygenerator.model.StudentGroup
 import de.thm.mni.dbs.casestudygenerator.model.StudyResult
 import de.thm.mni.dbs.casestudygenerator.repositories.GroupRepository
@@ -34,7 +33,7 @@ class ApiEndpoints(
         "/api".nest {
             GET("/case-studies", ::getCaseStudies)
             GET("/group-info", ::getGroupInfo)
-            POST("/generate", ::generateCaseStudies)
+            POST("/generate", ::requestCaseStudyGenerator)
 
             onError<Throwable>(::errorHandler)
         }
@@ -43,9 +42,7 @@ class ApiEndpoints(
     fun getGroupInfo(req: ServerRequest): Mono<ServerResponse> =
         ServerResponse.ok().body<StudentGroup>(
             groupRepository.findByToken(req.headers().firstHeader("access-token")!!).zipWhen { studentGroup ->
-                this.resultRepository.getAllByGroupId(studentGroup.groupId!!).map {
-                    it.caseStudy
-                }.publish(caseStudyRepository::findAllById).collectList()
+                getGroupResults(studentGroup)
             }.map { tuple ->
                 val group = tuple.t1
                 val results = tuple.t2
@@ -57,24 +54,46 @@ class ApiEndpoints(
     fun getCaseStudies(req: ServerRequest): Mono<ServerResponse> =
         ServerResponse.ok().body<CaseStudy>(caseStudyRepository.findAll())
 
-    fun generateCaseStudies(
+    fun requestCaseStudyGenerator(
         req: ServerRequest
     ): Mono<ServerResponse> {
+        return req.principal()
+            .cast(StudentGroup::class.java)
+            .zipWhen { studentGroup ->
+                resultRepository.existsByGroupId(studentGroup.groupId!!)
+            }.flatMap { (studentGroup, alreadyGenerated) ->
+                if (alreadyGenerated) {
+                    this.getGroupResults(studentGroup)
+                } else {
+                    this.generateCaseStudies(studentGroup, req)
+                }
+            }.flatMap {
+                ServerResponse.ok().bodyValue(it)
+            }
+        }
+
+    private fun generateCaseStudies(studentGroup: StudentGroup, req: ServerRequest): Mono<List<CaseStudy>> {
         return req.bodyToFlux(CaseStudy::class.java)
             .collectList()
-            .flatMap { exclusions ->
-                Mono.zip(exclusions.toMono(), caseStudyRepository.findAll().collectList(), req.principal())
-            }.map { (exclusions, caseStudies, principal) ->
-                principal as StudentGroup
-                logger.info("Generate case studies for group {}. Excluded: {}!", principal.groupName, exclusions)
-                val caseStudiesWithoutExclusions = applyExclusions(exclusions, caseStudies, principal)
-                Pair(selectCaseStudies(caseStudiesWithoutExclusions, principal.numCaseStudies), principal)
-            }.delayUntil { (selectedStudies, group) ->
+            .zipWith(caseStudyRepository.findAll().collectList())
+            .map { (exclusions, caseStudies) ->
+                logger.info("Generate case studies for group {}. Excluded: {}!", studentGroup.groupName, exclusions)
+                val caseStudiesWithoutExclusions = applyExclusions(exclusions, caseStudies, studentGroup)
+                selectCaseStudies(caseStudiesWithoutExclusions, studentGroup.numCaseStudies)
+            }.delayUntil { selectedStudies ->
                 this.resultRepository.saveAll(selectedStudies.map {
-                    StudyResult(it.number, group.groupId!!)
+                    StudyResult(it.number, studentGroup.groupId!!)
                 })
-            }.flatMap { selectedStudies ->
-                ServerResponse.ok().bodyValue(selectedStudies.first)
+            }
+    }
+
+    private fun getGroupResults(studentGroup: StudentGroup): Mono<MutableList<CaseStudy>> {
+        return this.resultRepository.getAllByGroupId(studentGroup.groupId!!)
+            .map { studyResult -> studyResult.caseStudy }
+            .publish(caseStudyRepository::findAllById)
+            .collectList()
+            .doOnNext { results ->
+                logger.info("Retrieving previously generated case studies for group {}: {}!", studentGroup.groupName, results)
             }
     }
 

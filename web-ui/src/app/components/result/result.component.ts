@@ -9,7 +9,7 @@ import { StudentGroup } from '../../model/StudentGroup'
 })
 export class ResultComponent implements OnInit {
   @Input() caseStudies: CaseStudy[] = []
-  @Input() groupInfo: StudentGroup
+  @Input() groupInfo?: StudentGroup
 
   ngOnInit (): void {
   }

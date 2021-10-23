@@ -18,20 +18,16 @@ export class AuthService {
   public init (route: ActivatedRoute): Observable<StudentGroup> {
     return route.queryParamMap.pipe(
       map(params => params.get('accessToken')!!),
-      tap(token => { this.accessToken.next(token) }),
+      tap(token => { this.accessToken!!.next(token) }),
       map(token => new HttpHeaders().set('access-token', token)),
       concatMap(headers => this.http.get<StudentGroup>('/api/group-info', { headers: headers, observe: 'response' })),
       map(response => response.body!!),
-      tap(groupInfo => { this.groupInfo.next(groupInfo) })
+      tap(groupInfo => { this.groupInfo!!.next(groupInfo) })
     )
   }
 
-  public getGroupInfo (): Observable<StudentGroup> {
-    return this.filterUndefined(this.groupInfo.asObservable())
-  }
-
   public getAccessToken (): Observable<string> {
-    return this.filterUndefined(this.accessToken.asObservable())
+    return this.filterUndefined(this.accessToken!!.asObservable())
   }
 
   private filterUndefined (obs: Observable<any>): Observable<any> {

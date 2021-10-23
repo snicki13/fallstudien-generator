@@ -1,11 +1,11 @@
 import { CaseStudy } from './CaseStudy'
 
-export class StudentGroup {
+export interface StudentGroup {
   groupId: number;
   groupName: string;
   token: string;
   numCaseStudies: number;
   numExclusions: number;
   validUntil: Date;
-  caseStudies: CaseStudy[] = [];
+  caseStudies: CaseStudy[];
 }

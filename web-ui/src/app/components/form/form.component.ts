@@ -9,7 +9,7 @@ import { StudentGroup } from '../../model/StudentGroup'
 })
 export class FormComponent {
   @Input() caseStudies: CaseStudy[] = []
-  @Input() groupInfo: StudentGroup
+  @Input() groupInfo?: StudentGroup
   @Output() excludedStudies: EventEmitter<CaseStudy[]> = new EventEmitter<CaseStudy[]>()
   map: boolean[] = []
 
@@ -27,6 +27,6 @@ export class FormComponent {
   }
 
   isDisabled (study: CaseStudy): boolean {
-    return !this.isChecked(study) && this.map.filter(value => value).length >= this.groupInfo.numExclusions
+    return !this.isChecked(study) && this.map.filter(value => value).length >= this.groupInfo!!.numExclusions
   }
 }

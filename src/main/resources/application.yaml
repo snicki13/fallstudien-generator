@@ -8,3 +8,11 @@ spring:
     url: r2dbc:pool:postgres://${DB_HOST:postgres}:5432/dev
     username: dev
     password: password
+  mail:
+    host: ${SMTP_HOST}
+    username: ${SMTP_USER}
+    password: ${SMTP_PASS}
+    port: ${SMTP_PORT:587}
+    properties.mail.smtp:
+      auth: true
+      starttls.enable: true
