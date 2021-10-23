@@ -9,9 +9,9 @@ spring:
     username: dev
     password: password
   mail:
-    host: ${SMTP_HOST}
-    username: ${SMTP_USER}
-    password: ${SMTP_PASS}
+    host: ${SMTP_HOST:localhost}
+    username: ${SMTP_USER:user}
+    password: ${SMTP_PASS:pass}
     port: ${SMTP_PORT:587}
     properties.mail.smtp:
       auth: true
