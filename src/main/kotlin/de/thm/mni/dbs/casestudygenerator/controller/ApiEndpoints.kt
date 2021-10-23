@@ -12,19 +12,19 @@ import reactor.core.publisher.Mono
 import de.thm.mni.dbs.casestudygenerator.component1
 import de.thm.mni.dbs.casestudygenerator.component2
 import de.thm.mni.dbs.casestudygenerator.model.StudentGroup
-import de.thm.mni.dbs.casestudygenerator.model.StudyResult
 import de.thm.mni.dbs.casestudygenerator.repositories.GroupRepository
 import de.thm.mni.dbs.casestudygenerator.repositories.ResultRepository
+import de.thm.mni.dbs.casestudygenerator.service.GeneratorService
 import org.springframework.web.reactive.function.server.body
-import reactor.kotlin.core.publisher.toMono
-import kotlin.random.Random
+
 
 @Configuration
 class ApiEndpoints(
-    private val caseStudyRepository: CaseStudyRepository,
+    private val generatorService: GeneratorService,
     private val groupRepository: GroupRepository,
+    private val caseStudyRepository: CaseStudyRepository,
     private val resultRepository: ResultRepository
-) {
+    ) {
 
     private val logger = LoggerFactory.getLogger(ApiEndpoints::class.java)
 
@@ -41,8 +41,9 @@ class ApiEndpoints(
 
     fun getGroupInfo(req: ServerRequest): Mono<ServerResponse> =
         ServerResponse.ok().body<StudentGroup>(
-            groupRepository.findByToken(req.headers().firstHeader("access-token")!!).zipWhen { studentGroup ->
-                getGroupResults(studentGroup)
+            groupRepository.findByToken(req.headers().firstHeader("access-token")!!)
+            .zipWhen { studentGroup ->
+                generatorService.getGroupResults(studentGroup)
             }.map { tuple ->
                 val group = tuple.t1
                 val results = tuple.t2
@@ -63,56 +64,14 @@ class ApiEndpoints(
                 resultRepository.existsByGroupId(studentGroup.groupId!!)
             }.flatMap { (studentGroup, alreadyGenerated) ->
                 if (alreadyGenerated) {
-                    this.getGroupResults(studentGroup)
+                    generatorService.getGroupResults(studentGroup)
                 } else {
-                    this.generateCaseStudies(studentGroup, req)
+                    generatorService.generateCaseStudies(studentGroup, req)
                 }
             }.flatMap {
                 ServerResponse.ok().bodyValue(it)
             }
         }
-
-    private fun generateCaseStudies(studentGroup: StudentGroup, req: ServerRequest): Mono<List<CaseStudy>> {
-        return req.bodyToFlux(CaseStudy::class.java)
-            .collectList()
-            .zipWith(caseStudyRepository.findAll().collectList())
-            .map { (exclusions, caseStudies) ->
-                logger.info("Generate case studies for group {}. Excluded: {}!", studentGroup.groupName, exclusions)
-                val caseStudiesWithoutExclusions = applyExclusions(exclusions, caseStudies, studentGroup)
-                selectCaseStudies(caseStudiesWithoutExclusions, studentGroup.numCaseStudies)
-            }.delayUntil { selectedStudies ->
-                this.resultRepository.saveAll(selectedStudies.map {
-                    StudyResult(it.number, studentGroup.groupId!!)
-                })
-            }
-    }
-
-    private fun getGroupResults(studentGroup: StudentGroup): Mono<MutableList<CaseStudy>> {
-        return this.resultRepository.getAllByGroupId(studentGroup.groupId!!)
-            .map { studyResult -> studyResult.caseStudy }
-            .publish(caseStudyRepository::findAllById)
-            .collectList()
-            .doOnNext { results ->
-                logger.info("Retrieving previously generated case studies for group {}: {}!", studentGroup.groupName, results)
-            }
-    }
-
-    private fun selectCaseStudies(caseStudies: List<CaseStudy>, numCaseStudies: Int): List<CaseStudy> {
-        val selectedStudies = caseStudies.shuffled(Random(Random.nextLong())).take(numCaseStudies)
-        return if (selectedStudies.size < numCaseStudies) {
-            throw Exception("Not enough case studies!")
-        } else {
-            selectedStudies
-        }
-    }
-
-    private fun applyExclusions(exclusions: List<CaseStudy>, caseStudies: List<CaseStudy>, studentGroup: StudentGroup): List<CaseStudy> {
-        return if (exclusions.size > studentGroup.numExclusions!!) {
-            throw Exception("You may only exclude ${studentGroup.numExclusions} case studies!")
-        } else {
-            caseStudies.filterNot(exclusions::contains)
-        }
-    }
     /**
      * Exception logger.
      */
