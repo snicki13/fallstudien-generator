@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono
 
 interface ResultRepository: ReactiveCrudRepository<StudyResult, Int> {
 
+    @Suppress("SpringDataRepositoryMethodReturnTypeInspection")
     fun existsByGroupId(groupId: Int): Mono<Boolean>
 
     fun getAllByGroupId(groupId: Int): Flux<StudyResult>
