@@ -7,7 +7,7 @@ spring:
   r2dbc:
     url: r2dbc:pool:postgres://${DB_HOST:postgres}:5432/${DB_SCHEMA:dev}
     username: ${DB_USER:dev}
-    password: ${DB_USER:password}
+    password: ${DB_PASS:password}
   mail:
     host: ${SMTP_HOST:localhost}
     username: ${SMTP_USER:user}
