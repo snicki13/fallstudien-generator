@@ -22,9 +22,8 @@ import kotlin.random.Random
 class GeneratorService(
     private val caseStudyRepository: CaseStudyRepository,
     private val resultRepository: ResultRepository,
-    private val mailSender: JavaMailSender,
-    private val mailProperties: MailProperties,
-) {
+    private val mailSender: JavaMailSender
+    ) {
 
     @Value("\${generator.mail.from}")
     lateinit var fromMail: String
