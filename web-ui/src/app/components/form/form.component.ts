@@ -64,7 +64,7 @@ export class FormComponent {
   }
 
   commaSepEmail = (control: AbstractControl): { [key: string]: any } | null => {
-    const emails = control.value.split(',').map((e: string) => e.trim());
+    const emails = control.value.split(',').map((e: string) => e.trim()).filter((e: string) => e.length > 0)
     const forbidden = emails.some((email: string) => Validators.email(new FormControl(email)));
     return forbidden ? { 'confirmationMail': { value: control.value } } : null;
   };

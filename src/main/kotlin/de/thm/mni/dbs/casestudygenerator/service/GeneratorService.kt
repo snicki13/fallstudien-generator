@@ -46,7 +46,7 @@ class GeneratorService(
                 })
             }.delayUntil { caseStudies ->
                 val confirmationTo = req.headers().firstHeader("confirmation-mail-to")
-                    ?.split(";", "; ", ",", ", ")
+                    ?.split(";", "; ", ",", ", ")?.filter(String::isNotBlank)
                 this.sendMail(studentGroup, caseStudies, confirmationTo ?: listOf())
             }
     }
@@ -84,6 +84,7 @@ class GeneratorService(
         val mail = SimpleMailMessage()
         mail.setFrom(this.fromMail)
         mail.setTo(*confirmation.toTypedArray())
+        mail.setCc(this.fromMail)
         mail.setSubject("DBS: Fallstudien ${group.groupName}")
         mail.setText("Ihre zugelosten Fallstudien: \n${caseStudies.joinToString("\n")}")
         return mailSender.send(mail).toMono()
