@@ -37,7 +37,7 @@ class AccessTokenSecurity(private val groupRepository: GroupRepository) {
 
     private fun accessTokenAuthenticationConverter() = ServerAuthenticationConverter { exchange ->
         val token = exchange.request.headers.getFirst("access-token") ?: ""
-        logger.debug("Access token: $token")
+        logger.debug("exchange: ${exchange.request.uri} Access token: $token")
         AccessTokenAuthentication(token).toMono()
     }
 }
