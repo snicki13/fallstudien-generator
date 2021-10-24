@@ -33,9 +33,19 @@ export class GenerateComponent implements OnInit {
     ).subscribe()
   }
 
-  generateStudies (excludedStudies: CaseStudy[]) {
-    this.generator.generate(excludedStudies).pipe(
+  generateStudies (formResult: FormResult) {
+    this.generator.generate(formResult.caseStudies, formResult.confirmationMailTo).pipe(
       tap(studies => { this.groupInfo!!.caseStudies = studies })
     ).subscribe()
+  }
+}
+
+export class FormResult {
+  public caseStudies: CaseStudy[] = []
+  public confirmationMailTo: string = ""
+
+  constructor(caseStudies: CaseStudy[], confirmationMailTo: string) {
+    this.caseStudies = caseStudies;
+    this.confirmationMailTo = confirmationMailTo;
   }
 }

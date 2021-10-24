@@ -1,18 +1,18 @@
-<app-header></app-header>
-<ng-container
-  *ngIf="groupInfo !== undefined && groupInfo.caseStudies.length != 0;
-  then result else generate">
-</ng-container>
+<div class="container">
+  <ng-container
+    *ngIf="groupInfo !== undefined && groupInfo.caseStudies.length > 0;
+    then result else generate">
+  </ng-container>
+</div>
 
 <ng-template #generate>
-<app-form
-  *ngIf="caseStudies !== undefined"
-  [caseStudies]="this.caseStudies"
-  [groupInfo]="groupInfo"
-  (excludedStudies)="this.generateStudies($event)">
-</app-form>
+  <app-form
+    *ngIf="caseStudies !== undefined"
+    [groupInfo]="groupInfo"
+    (excludedStudies)="this.generateStudies($event)">
+  </app-form>
 </ng-template>
 
 <ng-template #result>
-  <app-result [caseStudies]="groupInfo!!.caseStudies"></app-result>
+  <app-result [caseStudies]="groupInfo!!.caseStudies" [groupInfo]="groupInfo"></app-result>
 </ng-template>

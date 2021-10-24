@@ -16,3 +16,5 @@ spring:
     properties.mail.smtp:
       auth: true
       starttls.enable: true
+
+generator.mail.from: ${FROM_MAIL:test@localhost}

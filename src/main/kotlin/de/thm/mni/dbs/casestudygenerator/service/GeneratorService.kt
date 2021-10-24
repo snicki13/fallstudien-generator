@@ -8,16 +8,27 @@ import de.thm.mni.dbs.casestudygenerator.repositories.ResultRepository
 import de.thm.mni.dbs.casestudygenerator.component1
 import de.thm.mni.dbs.casestudygenerator.component2
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.mail.MailProperties
+import org.springframework.mail.SimpleMailMessage
+import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.server.ServerRequest
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import kotlin.random.Random
 
 @Service
 class GeneratorService(
     private val caseStudyRepository: CaseStudyRepository,
-    private val resultRepository: ResultRepository
+    private val resultRepository: ResultRepository,
+    private val mailSender: JavaMailSender,
+    private val mailProperties: MailProperties,
 ) {
+
+    @Value("\${generator.mail.from}")
+    lateinit var fromMail: String
+
 
     private val logger = LoggerFactory.getLogger(GeneratorService::class.java)
 
@@ -33,6 +44,10 @@ class GeneratorService(
                 this.resultRepository.saveAll(selectedStudies.map {
                     StudyResult(it.number, studentGroup.groupId!!)
                 })
+            }.delayUntil { caseStudies ->
+                val confirmationTo = req.headers().firstHeader("confirmation-mail-to")
+                    ?.split(";", "; ", ",", ", ")
+                this.sendMail(studentGroup, caseStudies, confirmationTo ?: listOf())
             }
     }
 
@@ -51,7 +66,9 @@ class GeneratorService(
         return if (selectedStudies.size < numCaseStudies) {
             throw Exception("Not enough case studies!")
         } else {
-            selectedStudies
+            selectedStudies.sortedBy {
+                it.number
+            }
         }
     }
 
@@ -61,5 +78,14 @@ class GeneratorService(
         } else {
             caseStudies.filterNot(exclusions::contains)
         }
+    }
+
+    fun sendMail(group: StudentGroup, caseStudies: List<CaseStudy>, confirmation: List<String>): Mono<Unit> {
+        val mail = SimpleMailMessage()
+        mail.setFrom(this.fromMail)
+        mail.setTo(*confirmation.toTypedArray())
+        mail.setSubject("DBS: Fallstudien ${group.groupName}")
+        mail.setText("Ihre zugelosten Fallstudien: \n${caseStudies.joinToString("\n")}")
+        return mailSender.send(mail).toMono()
     }
 }

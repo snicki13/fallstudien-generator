@@ -1,15 +1,19 @@
-<div class="form-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Profile Information</mat-card-title>
-    </mat-card-header>
+<mat-card class="form-container">
+  <div>
+    <mat-card-title>DBS Fallstudien Generator: {{groupInfo!!.groupName}}</mat-card-title>
+    <p>Ihre zugelosten Fallstudien:</p>
     <mat-card-content>
-
-      <div class="row" *ngFor="let study of this.caseStudies">
-        <span>{{study.number}} {{study.title}}</span>
+      <div class="studies">
+        <div class="study" *ngFor="let study of this.caseStudies; let i = index">
+          <mat-form-field>
+            <input matInput style="display: none">
+              <label>{{study.number}} {{study.title}}</label>
+          </mat-form-field>
+        </div>
       </div>
-      <div class="row">
-      </div>
+      <h3>Viel Erfolg!</h3>
     </mat-card-content>
-  </mat-card>
-</div>
+    <mat-card-actions></mat-card-actions>
+  </div>
+</mat-card>
+

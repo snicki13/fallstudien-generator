@@ -19,6 +19,7 @@ import { AppRoutingModule } from './app-routing.module'
 import { RouterModule } from '@angular/router'
 import { GenerateComponent } from './components/generate/generate.component';
 import { ResultComponent } from './components/result/result.component'
+import {MatCheckboxModule} from "@angular/material/checkbox";
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { ResultComponent } from './components/result/result.component'
     ReactiveFormsModule,
     HttpClientModule,
     RouterModule,
-    FormsModule
+    FormsModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input } from '@angular/core'
 import { CaseStudy } from '../../model/CaseStudy'
 import { StudentGroup } from '../../model/StudentGroup'
 
@@ -7,10 +7,7 @@ import { StudentGroup } from '../../model/StudentGroup'
   templateUrl: './result.component.html',
   styleUrls: ['./result.component.css']
 })
-export class ResultComponent implements OnInit {
+export class ResultComponent {
   @Input() caseStudies: CaseStudy[] = []
   @Input() groupInfo?: StudentGroup
-
-  ngOnInit (): void {
-  }
 }

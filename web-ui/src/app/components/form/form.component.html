@@ -1,22 +1,37 @@
-<div class="form-container" *ngIf="groupInfo !== null && this.caseStudies.length > 0">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Profile Information</mat-card-title>
-    </mat-card-header>
+<mat-card class="form-container">
+  <form
+    *ngIf="groupInfo !== undefined && this.caseStudies.length > 0"
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()">
+    <mat-card-title>DBS Fallstudien Generator: {{groupInfo.groupName}}</mat-card-title>
     <mat-card-content>
-
-      <div class="row" *ngFor="let study of this.caseStudies">
-          <input type="checkbox"
-                 [disabled]="isDisabled(study)"
-                 [value]="study.number"
-                 [(ngModel)]="map[study.number]"
-          > {{study.title}}
-      </div>
-      <div class="row">
+      <p>Sie dürfen maximal {{groupInfo.numExclusions}} Fallstudien ausschließen!</p>
+      <p>Aus den verbliebenen werden Ihnen {{groupInfo.numCaseStudies}} Fallstudien zugewiesen. Die zugelosten Fallstudien erhalten Sie auch per E-Mail. Bitte geben Sie Ihre mit Komma getrennten E-Mail Adressen an.</p>
+      <mat-form-field>
+        <mat-label>E-Mail Adresse(n)</mat-label>
+        <input matInput
+               name="confirmationMail"
+               type="email"
+               formControlName="confirmationMail"
+               required
+               multiple
+        placeholder="studi@thm.de, studi2@thm.de, ...">
+      </mat-form-field>
+      <div class="studies">
+        <div class="study" *ngFor="let study of this.caseStudies; let i = index" formArrayName="studies">
+          <mat-form-field>
+            <input matInput style="display: none">
+            <mat-checkbox
+                 [name]="'cs:' + study.number"
+                 [formControlName]="i">
+              <label>{{caseStudies[i].title}}</label>
+            </mat-checkbox>
+          </mat-form-field>
+        </div>
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button (click)="onSubmit()" mat-raised-button color="primary">Save</button>
+      <button type="submit" mat-raised-button color="primary" [disabled]="!form.valid">Generieren</button>
     </mat-card-actions>
-  </mat-card>
-</div>
+  </form>
+</mat-card>

@@ -24,10 +24,11 @@ export class CaseStudyGeneratorService {
     )
   }
 
-  public generate (excludedStudies: CaseStudy[]): Observable<CaseStudy[]> {
+  public generate (excludedStudies: CaseStudy[], confirmationMailTo: string): Observable<CaseStudy[]> {
     return this.auth.getAccessToken().pipe(
       filter(token => token !== undefined),
       map(token => new HttpHeaders().set('access-token', token)),
+      map(headers => headers.set('confirmation-mail-to', confirmationMailTo)),
       mergeMap((headers: HttpHeaders) => this.http.post<CaseStudy[]>('/api/generate', excludedStudies,
         { headers: headers, observe: 'response' })),
       map(response => response.body!!)
