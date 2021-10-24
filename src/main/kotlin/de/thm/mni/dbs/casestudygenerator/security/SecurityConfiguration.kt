@@ -28,19 +28,19 @@ class SecurityConfiguration(
                 Mono.empty()
             }
         return http
-            .httpBasic().disable()
-            .csrf().disable()
-            .cors().disable()
             .logout().disable()
             .addFilterAt(accessTokenSecurity.accessTokenWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
             .authorizeExchange()
-            .pathMatchers("/fallstudien/api/*")
+            .pathMatchers("/fallstudien/api/**")
             .authenticated()
             .and()
             .authorizeExchange()
             .pathMatchers("/fallstudien/*", "/fallstudien/generate", "/fallstudien/generate/*")
             .permitAll()
             .and()
+            .httpBasic().disable()
+            .csrf().disable()
+            .cors().disable()
             .build()
     }
 }

@@ -22,4 +22,4 @@ generator.mail.cc: ${MAIL_CC:test@localhost}
 
 logging:
   level:
-    ROOT: ${LOG_LEVEL:DEBUG}
+    de.thm.mni: ${LOG_LEVEL:DEBUG}
