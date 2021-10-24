@@ -21,4 +21,5 @@ generator.mail.from: ${FROM_MAIL:test@localhost}
 generator.mail.cc: ${MAIL_CC:test@localhost}
 
 logging:
-  level: ${LOG_LEVEL:debug}
+  level:
+    ROOT: ${LOG_LEVEL:DEBUG}
