@@ -38,7 +38,7 @@ class SecurityConfiguration(
             .authenticated()
             .and()
             .authorizeExchange()
-            .pathMatchers("/fallstudien", "/fallstudien/generate", "/fallstudien/generate/*")
+            .pathMatchers("/fallstudien/*", "/fallstudien/generate", "/fallstudien/generate/*")
             .permitAll()
             .and()
             .build()
