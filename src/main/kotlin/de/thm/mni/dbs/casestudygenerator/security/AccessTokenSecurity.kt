@@ -1,8 +1,6 @@
 package de.thm.mni.dbs.casestudygenerator.security
 
 import de.thm.mni.dbs.casestudygenerator.repositories.GroupRepository
-import de.thm.mni.dbs.casestudygenerator.repositories.ResultRepository
-import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
@@ -12,19 +10,13 @@ import org.springframework.stereotype.Component
 import reactor.kotlin.core.publisher.toMono
 
 @Component
-class AccessTokenSecurity(
-    private val groupRepository: GroupRepository,
-    private val resultRepository: ResultRepository
-    ) {
-
-    private val logger = LoggerFactory.getLogger(this::class.java)
-
+class AccessTokenSecurity(private val groupRepository: GroupRepository) {
     fun accessTokenWebFilter(): AuthenticationWebFilter {
         val sessionTokenFilter: AuthenticationWebFilter
         val authManager = this.reactiveAuthenticationManager()
         sessionTokenFilter = AuthenticationWebFilter(authManager)
         sessionTokenFilter.setRequiresAuthenticationMatcher(
-            ServerWebExchangeMatchers.pathMatchers("/api/*"),
+            ServerWebExchangeMatchers.pathMatchers("/fallstudien/api/*"),
         )
         sessionTokenFilter.setServerAuthenticationConverter(this.accessTokenAuthenticationConverter())
         return sessionTokenFilter

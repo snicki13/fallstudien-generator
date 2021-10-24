@@ -20,7 +20,7 @@ export class AuthService {
       map(params => params.get('accessToken')!!),
       tap(token => { this.accessToken!!.next(token) }),
       map(token => new HttpHeaders().set('access-token', token)),
-      concatMap(headers => this.http.get<StudentGroup>('/api/group-info', { headers: headers, observe: 'response' })),
+      concatMap(headers => this.http.get<StudentGroup>('api/group-info', { headers: headers, observe: 'response' })),
       map(response => response.body!!),
       tap(groupInfo => { this.groupInfo!!.next(groupInfo) })
     )

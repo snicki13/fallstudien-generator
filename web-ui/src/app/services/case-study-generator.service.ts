@@ -19,7 +19,7 @@ export class CaseStudyGeneratorService {
     return this.auth.getAccessToken().pipe(
       filter(token => token !== undefined),
       map(token => new HttpHeaders().set('access-token', token)),
-      mergeMap((headers: HttpHeaders) => this.http.get<CaseStudy[]>('/api/case-studies', { headers: headers, observe: 'response' })),
+      mergeMap((headers: HttpHeaders) => this.http.get<CaseStudy[]>('api/case-studies', { headers: headers, observe: 'response' })),
       map(response => response.body!!)
     )
   }
@@ -29,7 +29,7 @@ export class CaseStudyGeneratorService {
       filter(token => token !== undefined),
       map(token => new HttpHeaders().set('access-token', token)),
       map(headers => headers.set('confirmation-mail-to', confirmationMailTo)),
-      mergeMap((headers: HttpHeaders) => this.http.post<CaseStudy[]>('/api/generate', excludedStudies,
+      mergeMap((headers: HttpHeaders) => this.http.post<CaseStudy[]>('api/generate', excludedStudies,
         { headers: headers, observe: 'response' })),
       map(response => response.body!!)
     )

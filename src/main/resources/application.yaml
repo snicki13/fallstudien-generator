@@ -3,7 +3,7 @@ spring:
   web:
     resources.static-locations: classpath:/static/
   webflux:
-    static-path-pattern: /ui/**
+    static-path-pattern: /fallstudien/**
   r2dbc:
     url: r2dbc:pool:postgres://${DB_HOST:postgres}:5432/${DB_SCHEMA:dev}
     username: ${DB_USER:dev}

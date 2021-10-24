@@ -30,7 +30,7 @@ class ApiEndpoints(
 
     @Bean
     fun router() = router {
-        "/api".nest {
+        "/fallstudien/api".nest {
             GET("/case-studies", ::getCaseStudies)
             GET("/group-info", ::getGroupInfo)
             POST("/generate", ::requestCaseStudyGenerator)
