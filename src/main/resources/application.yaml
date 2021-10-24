@@ -18,3 +18,4 @@ spring:
       starttls.enable: true
 
 generator.mail.from: ${FROM_MAIL:test@localhost}
+generator.mail.cc: ${MAIL_CC:test@localhost}

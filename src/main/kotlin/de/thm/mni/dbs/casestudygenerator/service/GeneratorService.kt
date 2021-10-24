@@ -28,6 +28,9 @@ class GeneratorService(
     @Value("\${generator.mail.from}")
     lateinit var fromMail: String
 
+    @Value("\${generator.mail.cc}")
+    lateinit var mailCC: String
+
 
     private val logger = LoggerFactory.getLogger(GeneratorService::class.java)
 
@@ -83,7 +86,7 @@ class GeneratorService(
         val mail = SimpleMailMessage()
         mail.setFrom(this.fromMail)
         mail.setTo(*confirmation.toTypedArray())
-        mail.setCc(this.fromMail)
+        mail.setCc(this.mailCC)
         mail.setSubject("DBS: Fallstudien ${group.groupName}")
         mail.setText("Ihre zugelosten Fallstudien: \n${caseStudies.joinToString("\n")}")
         return mailSender.send(mail).toMono()
