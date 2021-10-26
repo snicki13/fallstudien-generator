@@ -7,6 +7,8 @@ import de.thm.mni.dbs.casestudygenerator.repositories.CaseStudyRepository
 import de.thm.mni.dbs.casestudygenerator.repositories.ResultRepository
 import de.thm.mni.dbs.casestudygenerator.component1
 import de.thm.mni.dbs.casestudygenerator.component2
+import de.thm.mni.dbs.casestudygenerator.model.Exclusions
+import de.thm.mni.dbs.casestudygenerator.repositories.ExclusionsRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.mail.MailProperties
@@ -15,6 +17,7 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.server.ServerRequest
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
 import reactor.kotlin.core.publisher.toMono
 import kotlin.random.Random
 
@@ -22,7 +25,8 @@ import kotlin.random.Random
 class GeneratorService(
     private val caseStudyRepository: CaseStudyRepository,
     private val resultRepository: ResultRepository,
-    private val mailSender: JavaMailSender
+    private val mailSender: JavaMailSender,
+    private val exclusionsRepository: ExclusionsRepository
     ) {
 
     @Value("\${generator.mail.from}")
@@ -38,7 +42,14 @@ class GeneratorService(
         return req.bodyToFlux(CaseStudy::class.java)
             .collectList()
             .zipWith(caseStudyRepository.findAll().collectList())
-            .map { (exclusions, caseStudies) ->
+            .delayUntil { (exclusions, _) ->
+                exclusions.toFlux().flatMap {
+                    exclusionsRepository.findById(it.number)
+                        .switchIfEmpty(exclusionsRepository.save(Exclusions(it.number, 0)))
+                }.map {
+                    it.apply { timesExcluded += 1 }
+                }.publish(exclusionsRepository::saveAll)
+            }.map { (exclusions, caseStudies) ->
                 logger.info("Generate case studies for group {}. Excluded: {}!", studentGroup.groupName, exclusions)
                 val caseStudiesWithoutExclusions = applyExclusions(exclusions, caseStudies, studentGroup)
                 selectCaseStudies(caseStudiesWithoutExclusions, studentGroup.numCaseStudies)
