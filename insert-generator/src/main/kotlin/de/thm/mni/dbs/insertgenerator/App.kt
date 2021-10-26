@@ -6,7 +6,7 @@ import org.apache.commons.lang3.RandomStringUtils
 fun main() {
     csvReader {
         delimiter = ';'
-    }.open("DBS-test.csv") {
+    }.open("DBS-Di6.csv") {
         parseCsvSequence(readAllWithHeaderAsSequence())
     }
 }

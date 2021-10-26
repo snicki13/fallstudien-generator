@@ -12,6 +12,24 @@ create table case_study (
     title varchar(255)
 );
 
+create table exclusions (
+    case_study int primary key,
+    times_excluded int
+);
+
+insert into exclusions(case_study, times_excluded) values (1, 2),
+                                                         (2, 2),
+                                                         (3, 1),
+                                                         (4, 3),
+                                                         (5, 9),
+                                                         (6, 5),
+                                                         (7, 5),
+                                                         (8, 7),
+                                                         (9, 11),
+                                                         (10, 3);
+
+
+
 create table study_result (
     result_id SERIAL primary key,
     case_study int,
