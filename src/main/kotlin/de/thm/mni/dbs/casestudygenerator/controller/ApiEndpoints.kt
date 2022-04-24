@@ -53,7 +53,7 @@ class ApiEndpoints(
         )
 
     fun getCaseStudies(req: ServerRequest): Mono<ServerResponse> =
-        ServerResponse.ok().body<CaseStudy>(caseStudyRepository.findAll())
+        ServerResponse.ok().body<CaseStudy>(caseStudyRepository.findAll().sort())
 
     fun requestCaseStudyGenerator(
         req: ServerRequest
