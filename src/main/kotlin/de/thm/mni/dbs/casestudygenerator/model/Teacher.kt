@@ -9,5 +9,5 @@ import org.springframework.data.relational.core.mapping.Table
 class Teacher (
     @field:Id val teacherId: Int,
     @field:Column val teacherName: String,
-    @field:Column val teacherEMail: String
+    @field:Column val teacherEmail: String
 )

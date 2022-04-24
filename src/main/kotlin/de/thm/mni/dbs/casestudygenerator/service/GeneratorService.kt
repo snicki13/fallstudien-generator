@@ -95,7 +95,7 @@ class GeneratorService(
                 val mail = SimpleMailMessage()
                 mail.setFrom(this.fromMail)
                 mail.setTo(*confirmation.toTypedArray())
-                mail.setCc(teacher.teacherEMail)
+                mail.setCc(teacher.teacherEmail)
                 mail.setSubject("DBS: Fallstudien ${group.groupName}")
                 mail.setText("Ihre zugelosten Fallstudien: \n${caseStudies.joinToString("\n")}")
                 mailSender.send(mail)
