@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.Table
 
 @Table
 class Teacher (
-    @field:Id val teacherId: Int? = null,
+    @field:Id val teacherId: Int,
     @field:Column val teacherName: String,
     @field:Column val teacherEMail: String
 )

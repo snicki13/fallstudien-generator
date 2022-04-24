@@ -93,11 +93,11 @@ class GeneratorService(
         return teacherRepository.findById(group.teacher)
             .map { teacher ->
                 val mail = SimpleMailMessage()
-                mail.from = this.fromMail
+                mail.setFrom(this.fromMail)
                 mail.setTo(*confirmation.toTypedArray())
                 mail.setCc(teacher.teacherEMail)
-                mail.subject = "DBS: Fallstudien ${group.groupName}"
-                mail.text = "Ihre zugelosten Fallstudien: \n${caseStudies.joinToString("\n")}"
+                mail.setSubject("DBS: Fallstudien ${group.groupName}")
+                mail.setText("Ihre zugelosten Fallstudien: \n${caseStudies.joinToString("\n")}")
                 mailSender.send(mail)
             }
     }

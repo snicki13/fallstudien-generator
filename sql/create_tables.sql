@@ -4,7 +4,8 @@ create table student_group (
     token varchar(255) unique,
     num_case_studies int,
     num_exclusions int default 3,
-    valid_until timestamp default NOW() + '7 days'::interval
+    valid_until timestamp default NOW() + '7 days'::interval,
+    teacher int default 1
 );
 
 create table case_study (
@@ -15,6 +16,12 @@ create table case_study (
 create table exclusions (
     case_study int primary key,
     times_excluded int
+);
+
+create table teacher (
+    teacher_id int,
+    teacher_name varchar(60),
+    teacher_email varchar(60)
 );
 
 insert into exclusions(case_study, times_excluded) values (1, 2),
