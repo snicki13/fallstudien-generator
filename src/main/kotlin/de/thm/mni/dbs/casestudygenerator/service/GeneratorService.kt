@@ -7,18 +7,17 @@ import de.thm.mni.dbs.casestudygenerator.repositories.CaseStudyRepository
 import de.thm.mni.dbs.casestudygenerator.repositories.ResultRepository
 import de.thm.mni.dbs.casestudygenerator.component1
 import de.thm.mni.dbs.casestudygenerator.component2
+import de.thm.mni.dbs.casestudygenerator.repositories.TeacherRepository
 import de.thm.mni.dbs.casestudygenerator.model.Exclusions
 import de.thm.mni.dbs.casestudygenerator.repositories.ExclusionsRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.mail.MailProperties
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.server.ServerRequest
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
-import reactor.kotlin.core.publisher.toMono
 import kotlin.random.Random
 
 @Service
@@ -26,15 +25,12 @@ class GeneratorService(
     private val caseStudyRepository: CaseStudyRepository,
     private val resultRepository: ResultRepository,
     private val mailSender: JavaMailSender,
+    private val teacherRepository: TeacherRepository,
     private val exclusionsRepository: ExclusionsRepository
     ) {
 
     @Value("\${generator.mail.from}")
     lateinit var fromMail: String
-
-    @Value("\${generator.mail.cc}")
-    lateinit var mailCC: String
-
 
     private val logger = LoggerFactory.getLogger(GeneratorService::class.java)
 
@@ -94,12 +90,15 @@ class GeneratorService(
     }
 
     fun sendMail(group: StudentGroup, caseStudies: List<CaseStudy>, confirmation: List<String>): Mono<Unit> {
-        val mail = SimpleMailMessage()
-        mail.setFrom(this.fromMail)
-        mail.setTo(*confirmation.toTypedArray())
-        mail.setCc(this.mailCC)
-        mail.setSubject("DBS: Fallstudien ${group.groupName}")
-        mail.setText("Ihre zugelosten Fallstudien: \n${caseStudies.joinToString("\n")}")
-        return mailSender.send(mail).toMono()
+        return teacherRepository.findById(group.teacher)
+            .map { teacher ->
+                val mail = SimpleMailMessage()
+                mail.from = this.fromMail
+                mail.setTo(*confirmation.toTypedArray())
+                mail.setCc(teacher.teacherEMail)
+                mail.subject = "DBS: Fallstudien ${group.groupName}"
+                mail.text = "Ihre zugelosten Fallstudien: \n${caseStudies.joinToString("\n")}"
+                mailSender.send(mail)
+            }
     }
 }

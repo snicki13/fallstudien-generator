@@ -17,7 +17,8 @@ data class StudentGroup(
     @field:Column val token: String,
     @field:Column val numCaseStudies: Int,
     @field:Column val numExclusions: Int? = null,
-    @field:Column val validUntil: LocalDateTime? = null
+    @field:Column val validUntil: LocalDateTime? = null,
+    @field:Column val teacher: Int
 ): Principal, Authentication {
 
     @JsonInclude
